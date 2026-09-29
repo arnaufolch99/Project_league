@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de la Liga</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 30px auto; padding: 20px; background-color: #f8f9fa; }
+        h1, h2 { color: #1a252f; }
+        .contenedor { display: flex; gap: 30px; align-items: flex-start; }
+        .bloque { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        
+        /* TABLA DE CLASIFICACIÓN */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dee2e6; padding: 8px; text-align: center; }
+        th { background-color: #f1f3f5; color: #495057; font-size: 14px; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        
+        /* CALENDARIO Y PARTIDOS ALINEADOS */
+        .jornada { background: #f8f9fa; border: 1px solid #e9ecef; padding: 12px; margin-bottom: 15px; border-radius: 6px; }
+        .jornada-titulo { font-weight: bold; margin-bottom: 8px; color: #2b8a3e; display: block; border-bottom: 1px solid #e9ecef; padding-bottom: 4px; }
+        .partido { display: flex; align-items: center; justify-content: space-between; margin: 8px 0; font-size: 14px; }
+        .equipo-local { width: 40%; text-align: right; font-weight: 600; padding-right: 8px; }
+        .equipo-visitante { width: 40%; text-align: left; font-weight: 600; padding-left: 8px; }
+        .marcador { display: flex; align-items: center; gap: 4px; width: 20%; justify-content: center; }
+        
+        input[type="number"] { width: 38px; height: 28px; text-align: center; font-size: 14px; border: 1px solid #ced4da; border-radius: 4px; }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        button { background-color: #2b8a3e; color: white; border: none; padding: 12px 20px; cursor: pointer; font-size: 16px; border-radius: 6px; font-weight: bold; width: 100%; margin-top: 10px; }
+        button:hover { background-color: #237032; }
+    </style>
+</head>
+<body>
+
+    <h1>🏆 Panel Principal de la Liga</h1>
+    
+    <form action="/actualizar-resultados" method="POST">
+        <div class="contenedor">
+            
+            <!-- COLUMNA 1: CALENDARIO -->
+            <div class="bloque">
+                <h2>📅 Calendario y Resultados</h2>
+                {% for jornada in calendario %}
+                    <div class="jornada">
+                        <span class="jornada-titulo">Jornada {{ loop.index }}</span>
+                        {% for partido in jornada %}
+                            <div class="partido">
+                                <span class="equipo-local">{{ partido.local }}</span>
+                                <div class="marcador">
+                                    <input type="number" name="goles_{{ partido.local }}_{{ partido.visitante }}" value="{{ partido.goles_local if partido.goles_local is not none else '' }}" min="0">
+                                    <span>-</span>
+                                    <input type="number" name="goles_{{ partido.visitante }}_{{ partido.local }}" value="{{ partido.goles_visitante if partido.goles_visitante is not none else '' }}" min="0">
+                                </div>
+                                <span class="equipo-visitante">{{ partido.visitante }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button type="submit">💾 Guardar Resultados</button>
+            </div>
+
+            <!-- COLUMNA 2: CLASIFICACIÓN -->
+            <div class="bloque">
+                <h2>📊 Clasificación</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Equipo</th>
+                            <th>PJ</th>
+                            <th>PG</th>
+                            <th>PE</th>
+                            <th>PP</th>
+                            <th>GF</th>
+                            <th>GC</th>
+                            <th>DG</th>
+                            <th>Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in clasificacion %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><strong>{{ fila.equipo }}</strong></td>
+                                <td>{{ fila.pj }}</td>
+                                <td>{{ fila.pg }}</td>
+                                <td>{{ fila.pe }}</td>
+                                <td>{{ fila.pp }}</td>
+                                <td>{{ fila.gf }}</td>
+                                <td>{{ fila.gc }}</td>
+                                <td>{{ fila.dg }}</td>
+                                <td><strong>{{ fila.pts }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </form>
+
+</body>
+</html>
